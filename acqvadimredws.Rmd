@@ -1,5 +1,5 @@
 ---
-title: "Introduction to Data Visualization with R - AcqVA Aurora workshop"
+title: "Introduction to Dimension Reduction Methods with R - AcqVA Aurora workshop"
 author: "Martin Schweinberger"
 date: "`r format(Sys.time(), '%Y-%m-%d')`"
 output:
@@ -16,20 +16,20 @@ knitr::include_graphics("https://slcladal.github.io/images/acqvalab.png")
 
 # Introduction{-}
 
-This tutorial introduces data visualization using R with the aim of showcasing how to visualize data and how to adapt, change, and modify visualizations using the `ggplot2`  [@ggplot2], the `vcd` [@vcd; @mosaic], and the `likert`packages [@likert]. 
+This tutorial introduces dimension reduction methods with R with the aim of showcasing how these methods work, how to prepare data and how to implement selected dimension reduction methods (Factor Analysis, Principal Component Analysis, and Multidimensional Scaling) using the `ggplot2`  [@ggplot2], the `vcd` [@vcd; @mosaic], and the `likert`packages [@likert]. 
 
 ```{r diff, echo=FALSE, out.width= "15%", out.extra='style="float:right; padding:10px"'}
 knitr::include_graphics("https://slcladal.github.io/images/gy_chili.jpg")
 ```
 
-This tutorial is aimed at beginners and intermediate users of R. The aim is not to provide a fully-fledged guide but rather to show and exemplify some common methods in data visualization such as how to produce different types of visualizations, how to adapt the style of visualizations, and how to modify the look and content of the visualizations in R.
+This tutorial is aimed at beginners and intermediate users of R. The aim is not to provide a fully-fledged guide but rather to show and exemplify some common dimension reduction methods with R.
 
 
 <div class="warning" style='padding:0.1em; background-color:#f2f2f2; color:#51247a'>
 <span>
 <p style='margin-top:1em; text-align:center'>
-The entire R Notebook for the tutorial can be downloaded [**here**](https://github.com/MartinSchweinberger/AcqVA_DataVisR_WS/acqvavizrws.Rmd).  If you want to render the R Notebook on your machine, i.e. knitting the document to html or a pdf, you need to make sure that you have R and RStudio installed and you also need to download the [**bibliography file**](https://github.com/MartinSchweinberger/AcqVA_DataVisR_WS/bibliography.bib) and store it in the same folder where you store the Rproj file. <br><br>
-**[Here](https://colab.research.google.com/drive/16VNNnRXAC6CFU9oBwLlQsoG_Xpub-CRl?usp=sharing)** is a **link to an interactive version of this tutorial on Google Colab**. The interactive tutorial is based on a Jupyter notebook of this tutorial. This interactive Jupyter notebook allows you to execute code yourself and - if you copy the Jupyter notebook - you can also change and edit the notebook, e.g. you can change code and upload your own data.<br></p>
+The entire R Notebook for the tutorial can be downloaded [**here**](https://github.com/MartinSchweinberger/AcqVA_DimRedR_WS/acqvadimredrws.Rmd).  If you want to render the R Notebook on your machine, i.e. knitting the document to html or a pdf, you need to make sure that you have R and RStudio installed and you also need to download the [**bibliography file**](https://github.com/MartinSchweinberger/AcqVA_DimRedR_WS/bibliography.bib) and store it in the same folder where you store the Rproj file. <br><br>
+**[Here](https://colab.research.google.com/drive/16VNNnRXAC6CFU9oBwLlQsoG_Xpub-CRl?usp=sharing)** is a **link to an interactive version of this tutorial on Binder**. The interactive tutorial is based on a Jupyter notebook of this tutorial. This interactive Jupyter notebook allows you to execute code yourself and - if you copy the Jupyter notebook - you can also change and edit the notebook, e.g. you can change code and upload your own data.<br></p>
 <p style='margin-left:1em;'>
 </p></span>
 </div>
