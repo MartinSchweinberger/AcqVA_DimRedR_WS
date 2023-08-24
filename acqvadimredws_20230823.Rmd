@@ -62,7 +62,7 @@ install.packages(c(
   "dplyr", "here", "flextable", "stringr", "tidyr",
   
   # packages for principal component analysis
-  "MASS", "factoextra", "psych",
+  "MASS", "factoextra", 
   
   # packages for visualizing and reporting results
   "ggplot2", "report"), 
@@ -87,7 +87,6 @@ library(MASS)
 library(factoextra)
 library(ggplot2)
 library(report)
-library(psych)
 ```
 
 You can find a more detailed version of the content of this workshop in these two LADAL tutorials
@@ -186,7 +185,7 @@ We will use 3 data sets:
 
 # Principal Component Analysis{-}
 
-Principal Component Analysis (PCA) [see, e.g., @clark2011introduction] is  used for dimensionality reduction and data compression while preserving as much variance as possible in the data. It achieves this by transforming the original data into a new coordinate system defined by a set of orthogonal axes called *principal components*. The first principal component captures the maximum variance in the data, the second captures the second maximum variance, and so on.
+Principal Component Analysis (PCA) is  used for dimensionality reduction and data compression while preserving as much variance as possible in the data. It achieves this by transforming the original data into a new coordinate system defined by a set of orthogonal axes called *principal components*. The first principal component captures the maximum variance in the data, the second captures the second maximum variance, and so on.
 
 >"Imagine you have just opened a cider shop. You have 50 varieties of cider and you want to work out how to allocate them onto shelves, so that similar-tasting ciders are put on the same shelf. There are lots of different tastes and textures in cider - sweetness, tartness, bitterness, yeastiness, fruitiness, clarity, fizziness etc etc. So what you need to do to put the bottles into categories is answer two questions:
 >
@@ -505,7 +504,7 @@ pcadat %>%
               linetype="dashed", size=1) +
   geom_segment(aes(x = 0, y = 0, xend = 0.7282191, yend = 0.6853444), size = 1.5, 
                   arrow = arrow(length = unit(0.25, "cm")), color = "red") +
-  ggplot2::annotate(geom = "text", label = "Eigenvector of PC1", x = -0.6, y = 0.5, color = "red")+
+  ggplot2::annotate(geom = "text", label = "Eigenvector of \nthe data point on PC1", x = -0.6, y = 0.5, color = "red")+
   coord_cartesian(xlim = c(-2, 2), ylim = c(-2, 2))
 ```
 
@@ -885,22 +884,12 @@ The figure shows that based on PC1, we can distinguish between subjects who are 
 
 In this example, we use the `biopsy` data to see what variables can be used to predict malignant melanomas.
 
-In a first step, we remove any data points with missing values and add meaningful variable names.
+In a first step, we remove any data points with missing values.
 
 ```{r removeNA1, message=F, warning=F}
 data(biopsy)
 biopsy_nona <- biopsy %>%
-  tidyr::drop_na() %>%
-  # add meaningful variable names
-  dplyr::rename(ClumpSize = V1,
-                CellSize = V2,
-                CellShape = V3,
-                Adhesion = V4,
-                EpithelialSize = V5,
-                Nuclei = V6,
-                Chromatin = V7,
-                Nucleoli = V8,
-                Mitoses = V9)
+  drop_na()
 # inspect data
 flextable::flextable(head(biopsy_nona, 10))
 ```
@@ -929,9 +918,7 @@ First, we create a scree plot of the variance captured by each component.
 ```{r}
 factoextra::fviz_eig(biopsy_pca,
                      addlabels = T,
-                     ylim = c(0, 80),
-                     barfill = "gray50",
-                     barcolor = "gray20")
+                     ylim = c(0, 80))
 ```
 
 
@@ -940,7 +927,6 @@ We now create a pretty biplot to show the results of the PCA.
 
 ```{r}
 fviz_pca_biplot(biopsy_pca,
-                geom = "point",
                 # no data point labels
                 label = "var",
                 # color by class
@@ -948,31 +934,20 @@ fviz_pca_biplot(biopsy_pca,
                 # change variable color 
                 col.var = "black") + 
   # adapt data point color
-  ggplot2::scale_color_manual(values = c("orange", "purple")) +
-  # add title
-  ggtitle("A pretty biplot")
+                ggplot2::scale_color_manual(values = c("orange", "purple"))
 ```
 
-The plot above is also known as variable correlation plot or biplot. A biplot overlays a score plot with a loading plot and thus shows individual data points as well as the relationships between all variables (in the form of arrows). It can be interpreted as follow:
+The plot above is also known as variable correlation plot or biplot. It shows the relationships between all variables. It can be interpreted as follow:
 
 + Positively correlated variables are grouped together.  
-+ Negatively correlated variables would be positioned on opposite sides of the plot origin (opposed quadrants).  
++ Negatively correlated variables are positioned on opposite sides of the plot origin (opposed quadrants).  
 + The distance between variables and the origin measures the quality of the variables on the factor map.  
 + Variables that are away from the origin are well represented on the factor map.
 
-But why are all variables cluster together?
-
-Let's have a look at the correlations between variables.
-
-```{r echo = F}
-flextable::flextable(as.data.frame(cor(scale(biopsy_num))))
-```
-
-The correlation matrix shows that all variables are positively correlated which explains why all variables cluster together. The low correlations between the other variables and *Mitosis* explain why it stands out.
 
 # Multidimensional Scaling {-}
 
-Multidimensional Scaling (MDS, see @davison1983introduction or @jacoby2018multidimensional) is used for visualizing high-dimensional data in a lower-dimensional space **while preserving pairwise distances** or similarities between data points. MDS aims to represent the data in a way that maintains the relationships among data points as much as possible. 
+Multidimensional Scaling (MDS) is used for visualizing high-dimensional data in a lower-dimensional space **while preserving pairwise distances** or similarities between data points. MDS aims to represent the data in a way that maintains the relationships among data points as much as possible. 
 
 There are two types of MDS:
 
@@ -982,44 +957,21 @@ There are two types of MDS:
 
 MDS works exactly like PCA with one important difference: **while PCA starts off with correlations between variables (the covariance matrix), MDS start of with distances (and thus relies on a distance matrix)!**
 
-### Example 1 {-}
+So we re-use the data we used for PCA (Example 1).
 
-We begin by loading data. This fictitious data set represents responses to 15 items by 20 participants. The 15 items aim to assess 3 different psychological constructs:
-
-+ outgoingness (extroversion)  
-
-+ intelligence  
-
-+ attitude
-
-```{r}
-surveydata <- base::readRDS(url("https://slcladal.github.io/data/sud.rda", "rb"))
-# inspect
-report(surveydata)
-```
-
-As MDS, like PCA and FA, works only on numeric data, we remove non-numeric variables from the data.
-
-```{r}
-surveydata <- surveydata %>% 
-  dplyr::select(-Respondent)
-# inspect
-str(surveydata)
-```
+As we already have the data, we can draw an MDS plot using the same data and the Euclidean distance. This graph should look the same as the PCA plot.
 
 For MDS, we first calculate the distance matrix using the Euclidian distance. Note that we are transposing, scaling and centering the data just like for PCA.
 
 ```{r}
-survey_dist <- dist(scale(t(surveydata), center=TRUE, scale=TRUE),
+pcadat_dist <- dist(scale(t(pcadat), center=TRUE, scale=TRUE),
   method="euclidean")
 ```
 
-Now, we generate an MDS object (this is basically eigenvalue decomposition)
+Now, we do the MDS math (this is basically eigenvalue decomposition)
 
 ```{r}
-mds.obj <- cmdscale(survey_dist, 
-                    eig=TRUE,   # adds a matrix of eignevalues to the mds object
-                    x.ret=TRUE) # adds a symmetric distance matrix to the mds object
+mds.obj <- cmdscale(pcadat_dist, eig=TRUE, x.ret=TRUE)
 ```
 
 Now, we calculate the percentage of variation that each MDS axis accounts for...
@@ -1049,58 +1001,124 @@ ggplot(data=mds.data, aes(x=X, y=Y, label=Sample)) +
   theme_bw() +
   xlab(paste("MDS1 - ", mds.var.per[1], "%", sep="")) +
   ylab(paste("MDS2 - ", mds.var.per[2], "%", sep="")) +
-  ggtitle("MDS plot using Euclidean distance") +
-  coord_cartesian(xlim = c(-7, 7), ylim = c(-4, 4))
+  ggtitle("MDS plot using Euclidean distance")
 ```
 
-The plot shows that we are dealing with 3 groups that are neatly separated along 2 dimensions. We also see that Q10 behaves different from the other items aiming to assess IQ. We could use this to optimize the item set of our survey. 
+Now draw an MDS plot using the same data and the average log(fold change). This graph should look different than the first two.
+
+First, take the log2 of all the values in the data.matrix. This makes it easy to compute log2(Fold Change) between a gene in two samples since...
+
+log2(Fold Change) = log2(value for sample 1) - log2(value for sample 2)
+
+```{r} 
+log2.pcadat <- log2(pcadat)
+```
+
+Now create an empty distance matrix
+
+```{r}
+log2.distance.matrix <- matrix(0,
+  nrow=ncol(log2.pcadat),
+  ncol=ncol(log2.pcadat),
+  dimnames=list(colnames(log2.pcadat),
+    colnames(log2.pcadat)))
+# inspect 
+log2.distance.matrix
+```
+
+now compute the distance matrix using avg(absolute value(log2(FC)))
+
+```{r}
+for(i in 1:ncol(log2.distance.matrix)) {
+  for(j in 1:i) {
+    log2.distance.matrix[i, j] <-
+      mean(abs(log2.pcadat[,i] - log2.pcadat[,j]))
+  }
+}
+# inspect
+log2.distance.matrix
+```
+
+Now we do the MDS math (this is basically eigenvalue decomposition). The `cmdscale()` is the function for classical MDS.
+
+```{r}
+mds.stuff <- cmdscale(as.dist(log2.distance.matrix),
+  eig=TRUE,
+  x.ret=TRUE)
+```
+
+Calculate the percentage of variation that each MDS axis accounts for...
+
+```{r}
+mds.var.per <- round(mds.stuff$eig/sum(mds.stuff$eig)*100, 1)
+# inspect
+mds.var.per
+```
+
+Now we make a fancy looking plot that shows the MDS axes and the variation:
+
+
+```{r}
+mds.values <- mds.stuff$points
+mds.data <- data.frame(Sample=rownames(mds.values),
+  X=mds.values[,1],
+  Y=mds.values[,2])
+# inspect
+mds.data
+```
+
+
+```{r}
+ggplot(data=mds.data, aes(x=X, y=Y, label=Sample)) +
+  geom_text() +
+  theme_bw() +
+  xlab(paste("MDS1 (", mds.var.per[1], "%)", sep="")) +
+  ylab(paste("MDS2 (", mds.var.per[2], "%)", sep="")) +
+  ggtitle("MDS plot using avg(logFC) as the distance") +
+  coord_cartesian(xlim = c(-.7, .7))
+```
+
 
 # Factor Analysis {-}
 
-Factor Analysis is used to identify underlying latent factors that explain the observed correlations among variables in a data set [@kim1978introduction; @field2012discovering, 749-811]. It aims to reduce the complexity of high-dimensional data by identifying a smaller number of factors (latent variables) that contribute to the variance and covariance among (observed) variables. Ideally those observed variables that represent an underlying factor should be highly correlated with each other but not correlated with (observed) variables that represent other factors (underlying variables). Like PCA and MDS, we find factors by aiming to reduce variability in the data. 
+Factor Analysis is used to identify underlying latent factors that explain the observed correlations among variables in a data set. It aims to reduce the complexity of high-dimensional data by identifying a smaller number of factors that contribute to the variance and covariance among variables. 
 
-There are two types of factor analysis:  
-
-+ exploratory factor analysis (EFA)  
-
+There are two types of factor analysis: 
++ exploratory factor analysis (EFA) 
 + confirmatory factor analysis (CFA)
 
 
-Here, we are only going to look at EFA which is used to identify how many latent variables (factors) are present in a data set. In contrast to CFA, EFA allows factors to be correlated with each other and it uses a rotation step to transform the initial factor structure into a more interpretable form. The rotation aims to maximize the loadings of variables on only a single factor  and it thereby maximizes the separation between factors. Common rotation methods include *Varimax*, *Oblimin*, and *Promax*. The *Varimax* rotation is an orthogonal rotation and it is the most common rotation method. It assumes that the factors are not correlated; another type of rotation are *oblique* rotations, such as *Oblimin* and *Promax*, which do not assume that the factors are not correlated [@field2012discovering, 755].
+Here, we are only going to look at EFA which is used to identify how many latent variables (factors) are present in a data set. In contrast to CFA, EFA allows factors to be correlated with each other and it uses a rotation step to transform the initial factor structure into a more interpretable form. Common rotation methods include *Varimax*, *Oblimin*, and *Promax*. 
 
 CFA is used for hypothesis testing to confirm structures assumed to be present in the data. In R, we can use `lavaan` (Structural Equation Models) to implement CFA and test specific hypothesis about the existence and interactions of latent factors.  
 
 
-### Example 1 {-}
+### FA in R {-}
 
-We continue with the survey data set and we can now implement the EFA using the `factanal` function from the base `stats` package. Although `factanal` implements a EFA, we need to provide it with the number of factors (latent variables) it should look for (commonly, you need to vary this to find the optimal number of factors).
+We begin by loading data. This fictitious data set represents responses to 15 items by 20 participants. The 15 items aim to assess 3 different psychological constructs:
 
-As a first step, we generate a scree plot to assess how many factors are in our data. There are two ways to interpret the output: (a) we choose the number of factors where there is a noticeable bend in the eigenvalues of the factors or, if there is no noticeable bend (the so-called *point of inflexion* [@field2012discovering, 763]), (b) select the last value above 1 (following @kaiser1960application - however, @jolliffe1987rotation suggests using .7 as 1 is too strict) [see @field2012discovering, 763 for more details on this discussion].
++ outgoingness (extroversion)
++ intelligence
++ attidude
+
+```{r}
+surveydata <- base::readRDS(url("https://slcladal.github.io/data/sud.rda", "rb"))
+# inspect
+report(surveydata)
+```
+
+For FA, we need to remove any nominal or categorical variables (Respondent).
 
 
 ```{r}
-# extract eigenvalues
-eigenvalues <- eigen(cor(surveydata))
+surveydata <- surveydata %>% 
+  dplyr::select(-Respondent)
 # inspect
-#eigenvalues
-
-# create scree plot
-eigenvalues$values %>%
-  as.data.frame() %>%
-  dplyr::rename(Eigenvalues = 1) %>%
-  dplyr::mutate(Factors = 1:nrow(.)) %>%
-  ggplot(aes(x = Factors, y = Eigenvalues, label = round(Eigenvalues, 2))) +
-  geom_bar(stat = "identity", fill = "lightgray") +
-  geom_line(color = "red", size = 1) +
-  geom_point() +
-  geom_text(vjust = -1.2) +
-  geom_hline(yintercept = 1, color = "blue", linetype = "dotted") +
-  theme_bw() +
-  coord_cartesian(ylim = c(0, 10)) +
-  ggtitle("Scree plot")
+str(surveydata)
 ```
 
-As there is a noticeable bend in the Eigenvalues of the factors at 3 factors, we are justified by assuming that there are 3 factors (latent or hidden variables) in our data. We can now perform the factor analysis and set the number of expected factors to 3.
+We can now implement the EFA using the `factanal` function from the base `stats` package. Although `factanal` implements a EFA, we need to provide it with the number of factors (latent variables) it should look for (commonly, you need to vary this to find the optimal number of factors).
+
 
 
 ```{r}
@@ -1114,14 +1132,13 @@ print(factoranalysis,
 
 Let us examine the output.
 
-We start with the *function call*, followed by *uniqueness* scores. Uniqueness refers to the portion of the variance in an observed variable that is not explained by the underlying factors extracted from the data. It represents the variability in a variable that is unique to that variable and cannot be accounted for by the common factors identified in the analysis (uniqueness is the variance that is unique to that variable whereas commonness is the variance it shares with other variables or factors) [see @field2012discovering, 759]. This means that items that do not capture or represent a latent variable well, will have high uniqueness scores (see, e.g., *Q10_Intelligence*).
+We start with the *function call*, followed by *uniqueness* scores. Uniqueness refers to the portion of the variance in an observed variable that is not explained by the underlying factors extracted from the data. It represents the variability in a variable that is unique to that variable and cannot be accounted for by the common factors identified in the analysis. This means that items that do not capture or represent a latent variable well, will have high uniqueness scores (see, e.g., *Q10_Intelligence*).
 
-Next, the output shows a table with factor loadings. *Loadings* are correlations between an observed variable and a latent factor. Loadings indicate how strongly each observed variable is associated with each extracted factor. They provide insights into which factors influence the variation in each observed variable. The fact that Q10_Intelligence loads across factors shows that it does nto represent its intended factor (IQ) not very well.  
-
+Next, the output shows a table with factor loadings. *Loadings* are correlations between an observed variable and a latent factor. Loadings indicate how strongly each observed variable is associated with each extracted factor. They provide insights into which factors influence the variation in each observed variable. 
 
 We then get a table showing the sum-of-squares loadings with the amount of variance explained by each latent variable which can help identify the optimal or necessary number of latent variables (factors) that we should or need to look for. 
 
-The p-value should not be significant (if it is significant, then you have missed factors). In our case,  2 factors would also report a non significant result due to the low number of data points (but p is highest for 3 factors). If this test is significant, then this suggests that you may need more factors than you currently have in your PA (but be careful: more factors can also lead to situations where you get factors that are more difficult to interpret. So make sure that the factors you include *make sense*).
+The p-value should not be significant (if it is significant, then you have missed factors). In our case, even 2 factors would report a non significant result due to the low number of data points (but p is highest for 3 factors).
 
 We can now plot the results to see if and how the different items group together. We start by created a data frame from the FA results containing the information we need for the visualization.
 
