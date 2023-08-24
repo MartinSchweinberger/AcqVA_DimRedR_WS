@@ -1,17 +1,8 @@
----
-title: "Introduction to Dimension Reduction Methods with R - AcqVA Aurora workshop"
-author: "Martin Schweinberger"
-date: "Friday, 25 August, 2023, 09:00-12:00 in E1004/Zoom"
-output:
-  bookdown::html_document2: 
-bibliography: bibliography.bib
-link-citations: yes
----
+# Introduction to Dimension Reduction Methods with R - AcqVA Aurora workshop
 
 
-```{r uq1, echo=F, fig.cap="", message=FALSE, warning=FALSE, out.width='100%'}
-knitr::include_graphics("https://slcladal.github.io/images/acqvalab.png")
-```
+
+![]("https://slcladal.github.io/images/acqvalab.png")
 
 **Abstract**
 
@@ -25,7 +16,7 @@ Note: Basic knowledge of statistics and basic familiarity with R is required. Pa
 
 
 
-# Introduction{-}
+## Introduction{-}
 
 This tutorial introduces dimension reduction methods with R with the aim of showcasing how these methods work, how to prepare data and how to implement selected dimension reduction methods (Principal Component Analysis, Factor Analysis, and Multidimensional Scaling). Unfortunately, we cannot deal with other, more complex dimension reduction methods such as Uniform Manifold Approximation and Projection (UMAP) or t-Distributed Stochastic Neighbor Embedding (t-SNE) here (maybe in a follow up session). The reduction of multiple variables is useful for many things, e.g., for visualization, noise reduction, and simplifying complex data sets. However, it's essential to note that interpretability of the principal components may not always be straightforward, as they are linear combinations of the original features.
 
@@ -45,7 +36,7 @@ The entire R Notebook for the tutorial can be downloaded [**here**](https://gith
 
 
 
-## What to do before the workshop{-}
+### What to do before the workshop{-}
 
 To get the most out of this workshop, you will need to have some (basic) R skills and (basic) knowledge of how to work with R, RStudio, R Projects, and R Notebooks. If you have no or little experience with this or if you need to refresh your skills, please carefully read (or optimally go through) these tutorials:
 
@@ -119,7 +110,7 @@ So, in essence, there are the following three options for following this worksho
 
 Choose which option suits you best and then go with it. 
 
-## Timeline{-}
+### Timeline{-}
 
 Here is what we have planned to cover in this workshop:
 
@@ -139,7 +130,7 @@ Friday, August 25, 10 am - 12 pm
 
 * Wrap-up
 
-# What are dimension reduction methods? {-}
+## What are dimension reduction methods? {-}
 
 Dimension reduction methods such as Principal Component Analysis (PCA), Multidimensional Scaling (MDS), and Factor Analysis are techniques used to *reduce the number of variables or dimensions in a data set while preserving as much relevant information as possible*. 
 
@@ -171,7 +162,7 @@ Like PCA, MDS only works really well when the number of variables isn't too big 
 
 Factor Analysis is a statistical technique that aims to uncover underlying latent factors that contribute to the observed variables in a data set. It's particularly useful when dealing with data where variables may be correlated, and you want to identify common factors that explain the shared variance. Factor Analysis assumes that observed variables are influenced by both the common factors and unique factors specific to each variable.
 
-# Getting started {-}
+## Getting started {-}
 
 If you choose option 2, you need to set up our R session and prepare our R project at the very beginning of the workshop. 
 
@@ -185,7 +176,7 @@ For everything to work, please do the following:
 
 This will then create an R Project in the project folder.
 
-## Today's Data{-}
+### Today's Data{-}
 
 
 We will use 3 data sets:
@@ -195,7 +186,7 @@ We will use 3 data sets:
 + **surveydata**: This fictitious data set represents responses to 15 items by 20 participants. The 15 items aim to assess 3 different psychological constructs (outgoingness, intelligence, and attidude).
 
 
-# Principal Component Analysis{-}
+## Principal Component Analysis{-}
 
 Principal Component Analysis (PCA) [see, e.g., @clark2011introduction] is  used for dimensionality reduction and data compression while preserving as much variance as possible in the data. It achieves this by transforming the original data into a new coordinate system defined by a set of orthogonal axes called *principal components*. The first principal component captures the maximum variance in the data, the second captures the second maximum variance, and so on.
 
@@ -214,6 +205,8 @@ Let's delve into an easy example to get a better understanding of the theoretica
 **Primer: Why should I use a PCA and what does PCA tell us?**
 
 Imagine we have a data set representing measurements of 4 features across a sample of 6 languages. We now want to see if the languages from groups based on the frequencies of these features.
+
+![]("https://MartinSchweinberger.github.io/AcqVA_DimRedR_WS/p01.png")
 
 ```{r echo=F, message=F, warning=F}
 pcadat <- data.frame(Language = c("Lang1", "Lang2", "Lang3", 
@@ -981,7 +974,7 @@ flextable::flextable(as.data.frame(cor(scale(biopsy_num))))
 
 The correlation matrix shows that all variables are positively correlated which explains why all variables cluster together. The low correlations between the other variables and *Mitosis* explain why it stands out.
 
-# Multidimensional Scaling {-}
+## Multidimensional Scaling {-}
 
 Multidimensional Scaling (MDS, see @davison1983introduction or @jacoby2018multidimensional) is used for visualizing high-dimensional data in a lower-dimensional space **while preserving pairwise distances** or similarities between data points. MDS aims to represent the data in a way that maintains the relationships among data points as much as possible. 
 
@@ -1066,7 +1059,7 @@ ggplot(data=mds.data, aes(x=X, y=Y, label=Sample)) +
 
 The plot shows that we are dealing with 3 groups that are neatly separated along 2 dimensions. We also see that Q10 behaves different from the other items aiming to assess IQ. We could use this to optimize the item set of our survey. 
 
-# Factor Analysis {-}
+## Factor Analysis {-}
 
 Factor Analysis is used to identify underlying latent factors that explain the observed correlations among variables in a data set [@kim1978introduction; @field2012discovering, 749-811]. It aims to reduce the complexity of high-dimensional data by identifying a smaller number of factors (latent variables) that contribute to the variance and covariance among (observed) variables. Ideally those observed variables that represent an underlying factor should be highly correlated with each other but not correlated with (observed) variables that represent other factors (underlying variables). Like PCA and MDS, we find factors by aiming to reduce variability in the data but unlike PCA, which is based on a co-variance matrix, or MDS, which is based on a distance matrix, EFA is based on a correlation matrix. 
 
@@ -1158,11 +1151,11 @@ fadat %>%
 
 As we can see, there are 3 groups (factors) with *Q10_Intelligence* not aligning well with the other elements in that group. This could suggest that *Q10_Intelligence* is not an optimal item / variable for reflecting (or capturing) the latent intelligence factor.
 
-# Wrap-up{-}
+## Wrap-up{-}
 
 That's all folks!
 
-# Citation & Session Info {-}
+## Citation & Session Info {-}
 
 Schweinberger, Martin. `r format(Sys.time(), '%Y')`. *Introduction to Dimension Reduction Methods with R - AcqVA Aurora workshop*. Tromsø: The Arctic University of Norway, Tromsø. url: https://slcladal.github.io/introviz.html  (Version `r format(Sys.time(), '%Y.%m.%d')`).
 
@@ -1190,6 +1183,6 @@ sessionInfo()
 
 ***
 
-# References {-}
+## References {-}
 
 
