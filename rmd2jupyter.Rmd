@@ -42,14 +42,6 @@ library(rmd2jupyter)
 rmd2jupyter::rmd2jupyter(here::here("acqvadimredws_cb.Rmd"))
 ```
 
-This worked and a ipynb-file is now in our directory.
-
-```{r convertall, eval = F, message = F}
-# convert many notebooks
-for (f in ladalrmds) rmd2jupyter::rmd2jupyter(f)
-```
-
-
 ```{r}
 sessionInfo()
 ```
